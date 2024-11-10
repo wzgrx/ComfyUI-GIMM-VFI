@@ -262,8 +262,11 @@ def cuda_kernel(strFunction: str, strKernel: str, objVariables: typing.Dict):
 
 @cupy.memoize(for_each_device=True)
 def cuda_launch(strKey: str):
-    if "CUDA_HOME" not in os.environ:
-        os.environ["CUDA_HOME"] = cupy.cuda.get_cuda_path()
+    try:
+        os.environ.setdefault("CUDA_HOME", cupy.cuda.get_cuda_path())
+    except Exception:
+        if "CUDA_HOME" not in os.environ:
+            raise RuntimeError("'CUDA_HOME' not set, unable to find cuda-toolkit installation.")
     
     strKernel = objCudacache[strKey]["strKernel"]
     strFunction = objCudacache[strKey]["strFunction"]
