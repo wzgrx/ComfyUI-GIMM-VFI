@@ -138,7 +138,7 @@ class GIMMVFI_interpolate:
             "required": {
                 "gimmvfi_model": ("GIMMVIF_MODEL",),
                 "images": ("IMAGE", {"tooltip": "The images to interpolate between"}),
-                "ds_factor": ("INT", {"default": 1, "min": 1, "max": 8, "step": 1}),
+                "ds_factor": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 8, "step": 0.01}),
                 "interpolation_factor": ("INT", {"default": 8, "min": 1, "max": 100, "step": 1}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             },
