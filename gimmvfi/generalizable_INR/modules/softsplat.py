@@ -261,6 +261,7 @@ def cuda_kernel(strFunction: str, strKernel: str, objVariables: typing.Dict):
 
 
 @cupy.memoize(for_each_device=True)
+@torch.compiler.disable()
 def cuda_launch(strKey: str):
     try:
         os.environ.setdefault("CUDA_HOME", cupy.cuda.get_cuda_path())
@@ -284,6 +285,7 @@ def cuda_launch(strKey: str):
 ##########################################################
 
 
+@torch.compiler.disable()
 def softsplat(tenIn, tenFlow, tenMetric, strMode, return_norm=False):
     assert strMode.split("-")[0] in ["sum", "avg", "linear", "softmax"]
 
@@ -449,6 +451,7 @@ class softsplat_func(torch.autograd.Function):
     # end
 
     @staticmethod
+    @torch.compiler.disable()
     @torch.amp.custom_bwd(device_type="cuda")
     def backward(self, tenOutgrad):
         tenIn, tenFlow = self.saved_tensors

@@ -34,7 +34,7 @@ from .modules.softsplat import softsplat
 class GIMMVFI_R(nn.Module):
     Config = GIMMVFIConfig
 
-    def __init__(self, config: GIMMVFIConfig):
+    def __init__(self, dtype, config: GIMMVFIConfig):
         super().__init__()
         self.config = config = config.copy()
         self.hyponet_config = config.hyponet
@@ -44,7 +44,7 @@ class GIMMVFI_R(nn.Module):
         #self.flow_estimator = initialize_RAFT()
         cur_f_dims = [128, 96]
         f_dims = [256, 128]
-        self.dtype = torch.float32
+        self.dtype = dtype
 
         skip_channels = f_dims[-1] // 2
         self.num_flows = 3
@@ -126,10 +126,10 @@ class GIMMVFI_R(nn.Module):
 
     def cal_bidirection_flow(self, im0, im1, iters=20):
         f01, features0, fnet0 = self.flow_estimator(
-            im0, im1, return_feat=True, iters=20
+            im0.to(self.dtype), im1.to(self.dtype), return_feat=True, iters=20
         )
         f10, features1, fnet1 = self.flow_estimator(
-            im1, im0, return_feat=True, iters=20
+            im1.to(self.dtype), im0.to(self.dtype), return_feat=True, iters=20
         )
         corr_fn = BidirCorrBlock(self.amt_fproj(fnet0), self.amt_fproj(fnet1), radius=4)
         features0 = [
@@ -220,6 +220,7 @@ class GIMMVFI_R(nn.Module):
         img_warp = mask * img0_warp + (1 - mask) * img1_warp
         return img_warp
 
+    @torch.compiler.disable()
     def frame_synthesize(
         self, img_xs, flow_t, features0, features1, corr_fn, cur_t, full_img=None
     ):

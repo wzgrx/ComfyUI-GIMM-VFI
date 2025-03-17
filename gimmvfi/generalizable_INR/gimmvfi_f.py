@@ -27,11 +27,13 @@ from .modules.softsplat import softsplat
 class GIMMVFI_F(nn.Module):
     Config = GIMMVFIConfig
 
-    def __init__(self, config: GIMMVFIConfig):
+    def __init__(self, dtype, config: GIMMVFIConfig):
         super().__init__()
         self.config = config = config.copy()
         self.hyponet_config = config.hyponet
         self.raft_iter = config.raft_iter
+
+        self.dtype = dtype
 
         ######### Encoder and Decoder Settings #########
         #self.flow_estimator = initialize_Flowformer()
@@ -201,6 +203,7 @@ class GIMMVFI_F(nn.Module):
         img_warp = mask * img0_warp + (1 - mask) * img1_warp
         return img_warp
 
+    @torch.compiler.disable()
     def frame_synthesize(
         self, img_xs, flow_t, features0, features1, corr_fn, cur_t, full_img=None
     ):
