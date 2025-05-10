@@ -51,6 +51,7 @@ class DownloadAndLoadGIMMVFIModel:
     RETURN_NAMES = ("gimmvfi_model",)
     FUNCTION = "loadmodel"
     CATEGORY = "GIMM-VFI"
+    DESCRIPTION = "Downloads and loads GIMM-VFI model from folder 'ComfyUI\models\interpolation\gimm-vfi'"
 
     def loadmodel(self, model, precision="fp32", torch_compile=False):
 
